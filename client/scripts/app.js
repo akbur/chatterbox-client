@@ -41,7 +41,7 @@ app.fetch = function() {
 };
 
 app.clearMessages = function() {
-
+  $('#chats').empty();
 };
 
 app.addMessage = function() {
