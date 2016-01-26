@@ -2,18 +2,13 @@ var app = {
   server: 'https://api.parse.com/1/classes/chatterbox/',
   username: 'anonymous',
   rooms: {},
+  friends: [],
 };
 
 app.init = function() {
-  //variables for data
   app.username = window.location.search.substr(10);
 
-  //jquery dom elements
-  app.$chat = $('#chats');
-  app.$roomSelect = $('#roomSelect');
-
-
-  //app.fetch();
+  app.fetch();
 };
  
 app.send = function(message) {
@@ -35,11 +30,10 @@ app.fetch = function() {
   $.ajax({
     url: app.server, 
     type: 'GET',
-    dataType: 'jsonp',
     contentType: 'application/json',
     success: function(data) {
-      processRoomData(data);
-      console.log(data);
+      app.processRoomData(data);
+      app.processMessageData(data);
     }, 
     error: function(data) {
       console.error('Failed to fetch: ', data);
@@ -49,8 +43,8 @@ app.fetch = function() {
 
 app.processRoomData = function(data) {
   if (data) {
-    _.each(data, function(item){
-      var roomname = data.roomname;
+    _.each(data.results, function(message){
+      var roomname = message.roomname;
       if (roomname && !app.rooms[roomname]) {
         app.addRoom(roomname);
         app.rooms[roomname] = true;
@@ -60,7 +54,15 @@ app.processRoomData = function(data) {
 };
 
 app.processMessageData = function(data) {
-
+  if (data) {
+    _.each(data.results, function(message) {
+      var text = message.text;
+      var username = message.username;
+      if (text && username) {
+        app.addMessage(username, text);
+      }
+    });  
+  }
 }
 
 app.clearMessages = function() {
@@ -68,19 +70,29 @@ app.clearMessages = function() {
 };
 
 app.addMessage = function(username, text) {
-  var message = '<div class="chat"><span class="username>"';
+  var message = '<div class="chat"><span class="username">';
   message += username + '</span><br>' + text + '</div>';
-  app.$chat.append(message);
+  $('#chats').append(message);
+  //app.addUsernameHandler();
 };
+
+/* adding friends in progress
+app.addUsernameHandler = function() {
+  $('.username').on('click', app.addFriend($(this)));
+}
+*/
 
 app.addRoom = function(roomname) {
   var option = '<option value="' + roomname + '">' + roomname + '</option>';
-  app.$roomSelect.append(option);
+  $('#roomSelect').append(option);
 };
 
-app.addFriend = function() {
-
+/* adding friends in progress
+app.addFriend = function(user) {
+  console.log('adding friend');
+  app.friends.push(user.val());
 };
+*/
 
 app.handleSubmit = function() {
 
