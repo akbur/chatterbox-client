@@ -105,8 +105,9 @@ app.addRoom = function(roomname) {
 
 app.roomClickHandler = function() {
   $('#roomSelect').change(function(){
-    var selected = $('#roomSelect option:selected').text();
-    console.log('changed to room: ' + selected);
+    app.room = $('#roomSelect option:selected').text();
+    console.log('changed to room: ' + app.room);
+    app.refresh();
   });
 };
 
@@ -131,7 +132,11 @@ app.handleSubmit = function(e) {
   var message = app.createMessage();
   app.send(message);
   app.clearForm();
+  app.refresh();
 };
 
+app.refresh = function() {
+  app.fetch();
+}
 
 app.init();
