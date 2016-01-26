@@ -3,6 +3,7 @@ var app = {
   username: 'anonymous',
   rooms: {},
   friends: {},
+  room: 'lobby',
 };
 
 app.init = function() {
@@ -36,6 +37,8 @@ app.fetch = function() {
       app.processRoomData(data);
       app.processMessageData(data);
       app.addFriendClickHandler();
+      app.submitClickHandler();
+      app.roomClickHandler();
     }, 
     error: function(data) {
       console.error('Failed to fetch: ', data);
@@ -56,17 +59,19 @@ app.processRoomData = function(data) {
 };
 
 app.processMessageData = function(data) {
+  app.clearMessages();
   if (data) {
     _.each(data.results, function(message) {
       var text = message.text;
       var username = message.username;
       var fromFriend = app.messageFromFriend(message);
+      var roomname = message.roomname;
       if (text && username) {
-        app.addMessage(username, text, fromFriend);
+        app.addMessage(username, text, roomname, fromFriend);
       }
     });  
   }
-}
+};
 
 app.addFriendClickHandler = function() {
   $('.username').on('click', app.addFriend);
@@ -85,10 +90,12 @@ app.clearMessages = function() {
   $('#chats').empty();
 };
 
-app.addMessage = function(username, text, fromFriend) {
-  var message = '<div class="chat"><span class="username">';
-  message += username + '</span><br>' + text + '</div>';
-  $('#chats').append(message);
+app.addMessage = function(username, text, roomname, fromFriend) {
+  if (roomname === app.room) {
+    var message = '<div class="chat"><span class="username">';
+    message += username + '</span><br>' + text + '</div>';
+    $('#chats').append(message);
+  }
 };
 
 app.addRoom = function(roomname) {
@@ -96,24 +103,35 @@ app.addRoom = function(roomname) {
   $('#roomSelect').append(option);
 };
 
+app.roomClickHandler = function() {
+  $('#roomSelect').change(function(){
+    var selected = $('#roomSelect option:selected').text();
+    console.log('changed to room: ' + selected);
+  });
+};
+
 app.createMessage = function() {
   var message = {};
   message.text = $('#message').val();
   message.username = app.username;
-  //TODO: get selected room
-  message.room = 'lobby';
+  message.roomname = app.room;
   return message;
-}
+};
 
-app.clearMessage = function() {
+app.clearForm = function() {
   $('#message').val('');
-}
+};
+
+app.submitClickHandler = function(){
+  $('#submit').on('click', app.handleSubmit);
+};
 
 app.handleSubmit = function(e) {
   e && e.preventDefault();
   var message = app.createMessage();
   app.send(message);
-  app.clearMessage();
+  app.clearForm();
 };
+
 
 app.init();
