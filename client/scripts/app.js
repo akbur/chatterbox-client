@@ -1,5 +1,5 @@
 var app = {
-  server: 'https://api.parse.com/1/classes/chatterbox/',
+  server: 'https://api.parse.com/1/classes/chatterbox',
   username: 'anonymous',
   rooms: {},
   friends: [],
@@ -34,6 +34,7 @@ app.fetch = function() {
     success: function(data) {
       app.processRoomData(data);
       app.processMessageData(data);
+      app.addFriendClickHandler();
     }, 
     error: function(data) {
       console.error('Failed to fetch: ', data);
@@ -66,33 +67,30 @@ app.processMessageData = function(data) {
 }
 
 app.clearMessages = function() {
-  app.$chat.empty();
+  $('#chats').empty();
 };
 
 app.addMessage = function(username, text) {
   var message = '<div class="chat"><span class="username">';
   message += username + '</span><br>' + text + '</div>';
   $('#chats').append(message);
-  //app.addUsernameHandler();
 };
 
-/* adding friends in progress
-app.addUsernameHandler = function() {
-  $('.username').on('click', app.addFriend($(this)));
+
+app.addFriendClickHandler = function() {
+  $('.username').on('click', app.addFriend);
 }
-*/
+
 
 app.addRoom = function(roomname) {
   var option = '<option value="' + roomname + '">' + roomname + '</option>';
   $('#roomSelect').append(option);
 };
 
-/* adding friends in progress
-app.addFriend = function(user) {
-  console.log('adding friend');
-  app.friends.push(user.val());
+
+app.addFriend = function() {
+  app.friends.push($(this));
 };
-*/
 
 app.handleSubmit = function() {
 
