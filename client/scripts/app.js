@@ -92,9 +92,13 @@ app.clearMessages = function() {
 
 app.addMessage = function(username, text, roomname, fromFriend) {
   if (roomname === app.room) {
-    var message = '<div class="chat"><span class="username">';
-    message += username + '</span><br>' + text + '</div>';
-    $('#chats').append(message);
+    var divClass = fromFriend ? {class: 'chat friend'} : {class: 'chat'};
+    var $message = $('<div>', divClass);
+    $message.text(text);
+    var $username = $('<span>', {class: 'username'});
+    $username.html(username + ':<br>');
+    $message.prepend($username);
+    $('#chats').append($message);
   }
 };
 
