@@ -1,10 +1,13 @@
 var app = {
-  server: 'https://api.parse.com/1/classes/chatterbox',
+  server: 'https://api.parse.com/1/classes/chatterbox/',
   username: 'anonymous',
 };
 
 app.init = function() {
+  app.username = window.location.search.substr(10);
+  console.log(app.username);
 
+  app.fetch();
 };
  
 app.send = function(message) {
@@ -24,7 +27,17 @@ app.send = function(message) {
 };
 
 app.fetch = function() {
-
+  $.ajax({
+    url: app.server, 
+    type: 'GET',
+    contentType: 'application/json',
+    success: function(data) {
+      console.log(data);
+    }, 
+    error: function(data) {
+      console.error('Failed to fetch: ', data);
+    }
+  });
 };
 
 app.clearMessages = function() {
@@ -46,3 +59,5 @@ app.addFriend = function() {
 app.handleSubmit = function() {
 
 };
+
+app.init();
