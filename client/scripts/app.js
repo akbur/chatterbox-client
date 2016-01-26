@@ -35,7 +35,7 @@ app.fetch = function() {
   $.ajax({
     url: app.server, 
     type: 'GET',
-    //dataType: 'jsonp',
+    dataType: 'jsonp',
     contentType: 'application/json',
     success: function(data) {
       processRoomData(data);
@@ -59,12 +59,18 @@ app.processRoomData = function(data) {
   }
 };
 
+app.processMessageData = function(data) {
+
+}
+
 app.clearMessages = function() {
   app.$chat.empty();
 };
 
-app.addMessage = function() {
-
+app.addMessage = function(username, text) {
+  var message = '<div class="chat"><span class="username>"';
+  message += username + '</span><br>' + text + '</div>';
+  app.$chat.append(message);
 };
 
 app.addRoom = function(roomname) {
